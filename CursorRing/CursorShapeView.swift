@@ -1,4 +1,5 @@
 import AppKit
+import QuartzCore
 
 /// CAShapeLayer でサークルを描く透明ビュー。
 /// 色・形・サイズ・線幅・描画中心をプロパティで可変にしてある。

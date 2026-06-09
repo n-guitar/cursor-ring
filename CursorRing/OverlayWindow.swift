@@ -3,9 +3,9 @@ import AppKit
 /// 透明・クリック透過・最前面のオーバーレイウィンドウ。
 /// 下のアプリ操作を邪魔せずにサークルを重ねるための「板」。
 final class OverlayWindow: NSWindow {
-    init(screen: NSScreen) {
+    init(frame: NSRect) {
         super.init(
-            contentRect: screen.frame,
+            contentRect: frame,
             styleMask: .borderless,        // 枠なし
             backing: .buffered,
             defer: false

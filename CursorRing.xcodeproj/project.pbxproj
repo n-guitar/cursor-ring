@@ -13,6 +13,12 @@
 		1C0000000000000000000004 /* OverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0000000000000000000004 /* OverlayWindow.swift */; };
 		1C0000000000000000000005 /* CursorShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0000000000000000000005 /* CursorShapeView.swift */; };
 		1C0000000000000000000006 /* CursorShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0000000000000000000006 /* CursorShape.swift */; };
+		1C0000000000000000000007 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0000000000000000000007 /* AppSettings.swift */; };
+		1C0000000000000000000008 /* MouseTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0000000000000000000008 /* MouseTracker.swift */; };
+		1C0000000000000000000009 /* ShortcutMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0000000000000000000009 /* ShortcutMonitor.swift */; };
+		1C000000000000000000000A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000A /* SettingsView.swift */; };
+		1C000000000000000000000B /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000B /* SettingsWindowController.swift */; };
+		1C000000000000000000000C /* NSColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000C /* NSColor+Hex.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +29,12 @@
 		1B0000000000000000000004 /* OverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayWindow.swift; sourceTree = "<group>"; };
 		1B0000000000000000000005 /* CursorShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorShapeView.swift; sourceTree = "<group>"; };
 		1B0000000000000000000006 /* CursorShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorShape.swift; sourceTree = "<group>"; };
+		1B0000000000000000000007 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		1B0000000000000000000008 /* MouseTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseTracker.swift; sourceTree = "<group>"; };
+		1B0000000000000000000009 /* ShortcutMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutMonitor.swift; sourceTree = "<group>"; };
+		1B000000000000000000000A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		1B000000000000000000000B /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		1B000000000000000000000C /* NSColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSColor+Hex.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +73,12 @@
 				1B0000000000000000000004 /* OverlayWindow.swift */,
 				1B0000000000000000000005 /* CursorShapeView.swift */,
 				1B0000000000000000000006 /* CursorShape.swift */,
+				1B0000000000000000000007 /* AppSettings.swift */,
+				1B0000000000000000000008 /* MouseTracker.swift */,
+				1B0000000000000000000009 /* ShortcutMonitor.swift */,
+				1B000000000000000000000A /* SettingsView.swift */,
+				1B000000000000000000000B /* SettingsWindowController.swift */,
+				1B000000000000000000000C /* NSColor+Hex.swift */,
 			);
 			path = CursorRing;
 			sourceTree = "<group>";
@@ -139,6 +157,12 @@
 				1C0000000000000000000004 /* OverlayWindow.swift in Sources */,
 				1C0000000000000000000005 /* CursorShapeView.swift in Sources */,
 				1C0000000000000000000006 /* CursorShape.swift in Sources */,
+				1C0000000000000000000007 /* AppSettings.swift in Sources */,
+				1C0000000000000000000008 /* MouseTracker.swift in Sources */,
+				1C0000000000000000000009 /* ShortcutMonitor.swift in Sources */,
+				1C000000000000000000000A /* SettingsView.swift in Sources */,
+				1C000000000000000000000B /* SettingsWindowController.swift in Sources */,
+				1C000000000000000000000C /* NSColor+Hex.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
