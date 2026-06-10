@@ -55,7 +55,7 @@ enum Accessibility {
 /// グローバルショートカットを「押している間」検知する。
 /// keyDown で onPress、keyUp で onRelease を呼ぶ（キーリピートは無視）。
 ///
-/// NSEvent のグローバルキー監視にはアクセシビリティ権限が必要（#287 参照）。
+/// NSEvent のグローバルキー監視にはアクセシビリティ権限が必要。
 /// キーを横取りしない読み取り専用のため CGEventTap は使わない。
 final class ShortcutMonitor {
     var onPress: (() -> Void)?

@@ -4,11 +4,10 @@
 
 グローバルショートカットを押している間、マウスカーソルに追従してサークルを表示する macOS メニューバー常駐アプリ。
 
-- 設計・調査ログ: [n-guitar/second-brain #287](https://github.com/n-guitar/second-brain/issues/287)
 - 言語/UI: Swift + SwiftUI（`MenuBarExtra` / 設定画面）+ AppKit（オーバーレイ描画・イベント監視）
 - 対象: macOS 13 (Ventura) 以降
 
-## 進め方（#287 のステップ）
+## 進め方（実装ステップ）
 
 1. Xcode で macOS App（SwiftUI / `MenuBarExtra`）を新規作成。`LSUIElement=YES` ✅
 2. 透明・クリック透過の `NSWindow` に固定の円を描く ✅
@@ -33,7 +32,7 @@
 
 ### ショートカットライブラリについて
 
-#287 では設定 UI に `KeyboardShortcuts`（Sindre Sorhus）の採用を想定していたが、
+当初は設定 UI に `KeyboardShortcuts`（Sindre Sorhus）の採用を想定していたが、
 本コミットでは**外部 SPM 依存を入れていない**。理由:
 
 - この実行環境（Linux）では SPM のバージョン解決もビルドも検証できない
