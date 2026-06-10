@@ -1,5 +1,7 @@
 # cursor-ring
 
+[![Build](https://github.com/n-guitar/cursor-ring/actions/workflows/build.yml/badge.svg)](https://github.com/n-guitar/cursor-ring/actions/workflows/build.yml)
+
 グローバルショートカットを押している間、マウスカーソルに追従してサークルを表示する macOS メニューバー常駐アプリ。
 
 - 設計・調査ログ: [n-guitar/second-brain #287](https://github.com/n-guitar/second-brain/issues/287)
@@ -43,10 +45,14 @@
 を追加し、`SettingsView` の記録部分と `ShortcutMonitor` を `KeyboardShortcuts.onKeyDown/onKeyUp`
 に置き換える（差し替え点は1ファイルずつに分離済み）。
 
-## 未検証（重要）
+## 検証状況
 
-このコードは **macOS 上でビルド・動作確認できていない**（作成環境が Linux で Xcode/macOS SDK が無い）。
-お手元の Xcode でビルドが通るか確認してほしい。コンパイルエラーが出た箇所は指摘してくれれば直す。
+- **コンパイル・リンク: 検証済み**。GitHub Actions（macOS / Xcode 15.4、`arm64`＋`x86_64`、
+  deployment target macOS 13.0）で `xcodebuild` が `** BUILD SUCCEEDED **`。
+  以後の push でも `.github/workflows/build.yml` が自動でビルド検証する。
+- **実機での動作（リングの見た目・マウス追従・権限フロー）: 未確認**。
+  CI はコンパイルのみを保証する。実際の挙動はお手元で ⌘R して確認してほしい。
+  おかしい点があれば指摘してくれれば直す。
 
 ## ビルド・実行
 
