@@ -13,6 +13,8 @@ It lives in the menu bar and stays out of the Dock.
 
 > 🇯🇵 日本語の説明は [**README.ja.md**](README.ja.md) にあります。
 
+Free and open source under the [MIT License](LICENSE) — use it however you like.
+
 ## Features
 
 - 🔵 **A ring that follows your cursor**, shown with one key — point at what matters
@@ -109,3 +111,7 @@ CursorRing/
 - Code signing / notarization for distribution (needs an Apple Developer account)
 
 </details>
+
+## License
+
+[MIT License](LICENSE) © n-guitar. Completely free — use, modify, and redistribute freely.

@@ -13,6 +13,8 @@ cursor-ring は、キーひとつでマウスポインタの周りにリング�
 
 > 🇬🇧 English: [**README.md**](README.md)
 
+[MIT ライセンス](LICENSE)の完全フリーソフトウェアです。自由に使ってください。
+
 ## できること
 
 - 🔵 **カーソルに追従するリング**をキー一つで表示 — 注目させたい場所を指し示す
@@ -108,3 +110,7 @@ CursorRing/
 - 配布用の署名・Notarization（Apple Developer 登録が必要）
 
 </details>
+
+## ライセンス
+
+[MIT License](LICENSE) © n-guitar。完全フリー — 利用・改変・再配布は自由です。
