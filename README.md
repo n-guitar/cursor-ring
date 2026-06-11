@@ -12,7 +12,7 @@
 1. Xcode で macOS App（SwiftUI / `MenuBarExtra`）を新規作成。`LSUIElement=YES` ✅
 2. 透明・クリック透過の `NSWindow` に固定の円を描く ✅
 3. `NSEvent.mouseLocation` でマウス追従 ✅
-4. グローバルショートカット（押している間だけ表示）+ アクセシビリティ権限誘導 ✅
+4. グローバルショートカット（押している間だけ表示）— Carbon ホットキーで**権限不要** ✅
 5. 色・形・サイズ・ショートカットの設定 UI（`@AppStorage` / `UserDefaults`）✅
 6. （配布するなら）署名・Notarization・権限誘導 — **未着手**（不可逆な配布の境界のため保留）
 
@@ -26,9 +26,14 @@
   - `ignoresMouseEvents = true`（クリック透過）/ `level = .screenSaver`
   - 全ディスプレイを覆う矩形に対応（マルチディスプレイで追従）
 - `CAShapeLayer` でサークル描画（`CursorShapeView`）。形は `enum CursorShape { ring, square }`（縦横別指定で楕円・長方形に）
-- `NSEvent` でマウス追従（`MouseTracker`）/ グローバルキー監視（`ShortcutMonitor`）/ スクロール伸縮（`ScrollMonitor`）
-- 設定画面（`SettingsView`）: 色・形・サイズ・線幅・ショートカット変更・権限状態
+- ショートカットは **Carbon `RegisterEventHotKey`**（`ShortcutMonitor`）で検知 — **アクセシビリティ権限不要**
+- マウス追従（`MouseTracker`）・スクロール伸縮（`ScrollMonitor`）は `NSEvent` のグローバル監視（マウス系は権限不要）
+- 設定画面（`SettingsView`）: 色・形・横幅・縦幅・線幅・ショートカット変更
 - 設定は `UserDefaults` に永続化（`AppSettings`）
+
+> **権限について**: ショートカット検知に Carbon ホットキーを使うため、アクセシビリティ権限は不要。
+> 当初は `NSEvent` のグローバルキー監視（要・アクセシビリティ権限）を使っていたが、未署名アプリだと
+> 権限の付与が TCC の署名不一致で効かない問題があり、権限不要な Carbon 方式へ切り替えた。
 
 ### ショートカットライブラリについて
 
@@ -62,7 +67,7 @@ push のたびに CI が `.app` をビルドし、成果物として添付する
 3. **未署名のため初回起動は Gatekeeper に止められる**。回避はどちらか:
    - `CursorRing.app` を右クリック →「開く」→ ダイアログで「開く」
    - もしくはターミナルで `xattr -dr com.apple.quarantine /path/to/CursorRing.app`
-4. 起動後、アクセシビリティ権限を付与（システム設定 > プライバシーとセキュリティ > アクセシビリティ）
+4. 起動したら既定ショートカットを押している間にリングが出る。**アクセシビリティ等の権限付与は不要**
 
 > CI 産の `.app` は未署名・未 Notarize。自分の Mac で動かす個人利用向け。配布は別途署名 + Notarization が必要。
 
@@ -74,12 +79,10 @@ open CursorRing.xcodeproj
 
 Xcode で Run（⌘R）。Dock には出ず、メニューバーに破線円アイコンが出る。
 
-1. 初回起動時、グローバルキー監視のため**アクセシビリティ権限**を求められる
-   （システム設定 > プライバシーとセキュリティ > アクセシビリティ で CursorRing を許可）
-2. 既定ショートカット **⌃⌥R** を押している間、マウスに追従して赤いリングが出る
-3. リング表示中にスクロールで伸縮（上下スクロール＝縦、左右スクロール＝横。トラックパッドは2本指で縦横自在）
-4. メニューの「設定…」で形・色・横幅・縦幅・線の太さ・ショートカットを変更できる
-5. メニューの「サークルを表示（テスト）」で固定表示の確認もできる
+1. 既定ショートカット **⌃⌥R** を押している間、マウスに追従して赤いリングが出る（権限付与は不要）
+2. リング表示中にスクロールで伸縮（上下スクロール＝縦、左右スクロール＝横。トラックパッドは2本指で縦横自在）
+3. メニューの「設定…」で形・色・横幅・縦幅・線の太さ・ショートカットを変更できる
+4. メニューの「サークルを表示（テスト）」で固定表示の確認もできる
 
 > ローカル実行のみなら署名は「Sign to Run Locally」で動く。配布時に Apple Developer 署名 + Notarization が必要（ステップ6）。
 
@@ -88,13 +91,14 @@ Xcode で Run（⌘R）。Dock には出ず、メニューバーに破線円ア�
 ```
 CursorRing/
   CursorRingApp.swift            @main / MenuBarExtra（メニュー）
-  AppDelegate.swift              ショートカット監視と表示の配線・権限確認
-  OverlayController.swift        オーバーレイ生成・表示・マウス追従・設定反映
+  AppDelegate.swift              ショートカット監視と表示の配線
+  OverlayController.swift        オーバーレイ生成・表示・マウス追従・スクロール伸縮・設定反映
   OverlayWindow.swift            透明・クリック透過・最前面の NSWindow
   CursorShapeView.swift          CAShapeLayer でサークルを描く NSView
   CursorShape.swift              形の enum（パス差し替え）
   MouseTracker.swift             NSEvent によるマウス追従
-  ShortcutMonitor.swift          NSEvent によるグローバルキー監視 + 権限ヘルパ
+  ScrollMonitor.swift            NSEvent によるスクロール伸縮
+  ShortcutMonitor.swift          Carbon RegisterEventHotKey によるホットキー検知（権限不要）
   AppSettings.swift              設定の保持・永続化（UserDefaults）
   SettingsView.swift             設定画面（SwiftUI）
   SettingsWindowController.swift 設定ウィンドウ管理（AppKit）

@@ -6,10 +6,6 @@ struct SettingsView: View {
 
     @State private var recording = false
     @State private var recorderMonitor: Any?
-    @State private var accessibilityTrusted = Accessibility.isTrusted
-
-    // 権限状態を 1 秒ごとに見直して表示を自動更新する。
-    private let pollTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
         Form {
@@ -35,33 +31,13 @@ struct SettingsView: View {
                         recording ? stopRecording() : startRecording()
                     }
                 }
-                Text("⌃ ⌥ ⇧ ⌘ のいずれかと組み合わせて記録してください。")
-                    .font(.caption).foregroundColor(.secondary)
-            }
-
-            Section("権限") {
-                HStack {
-                    Image(systemName: accessibilityTrusted ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                        .foregroundColor(accessibilityTrusted ? .green : .orange)
-                    Text(accessibilityTrusted ? "アクセシビリティ権限: 許可済み" : "アクセシビリティ権限が必要です")
-                    Spacer()
-                    if !accessibilityTrusted {
-                        Button("システム設定を開く") { Accessibility.openSettings() }
-                    }
-                }
-                Text(accessibilityTrusted
-                     ? "ショートカット監視が有効です。"
-                     : "グローバルショートカットの検知に必要です。許可するとここが自動で「許可済み」に変わります。")
+                Text("⌃ ⌥ ⇧ ⌘ のいずれかと組み合わせて記録してください。特別な権限は不要です。")
                     .font(.caption).foregroundColor(.secondary)
             }
         }
         .formStyle(.grouped)
-        .frame(width: 440, height: 560)
-        .onAppear { accessibilityTrusted = Accessibility.isTrusted }
+        .frame(width: 440, height: 480)
         .onDisappear { stopRecording() }
-        .onReceive(pollTimer) { _ in
-            accessibilityTrusted = Accessibility.isTrusted
-        }
     }
 
     @ViewBuilder

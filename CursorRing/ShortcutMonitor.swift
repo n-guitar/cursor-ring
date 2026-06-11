@@ -1,5 +1,4 @@
 import AppKit
-import ApplicationServices
 import Carbon.HIToolbox
 
 /// グローバルショートカットの1組（キー + 修飾キー）。
@@ -31,39 +30,20 @@ struct KeyCombo: Equatable {
     }
 }
 
-/// アクセシビリティ権限（グローバルキー監視に必要）のヘルパ。
-enum Accessibility {
-    static var isTrusted: Bool { AXIsProcessTrusted() }
-
-    /// 未許可ならシステムの権限付与プロンプトを表示する。
-    @discardableResult
-    static func requestIfNeeded() -> Bool {
-        // kAXTrustedCheckOptionPrompt の実値。定数のブリッジ方法が SDK 版で揺れるため文字列で指定。
-        let options = ["AXTrustedCheckOptionPrompt": true] as CFDictionary
-        return AXIsProcessTrustedWithOptions(options)
-    }
-
-    /// システム設定の「プライバシーとセキュリティ > アクセシビリティ」を開く。
-    static func openSettings() {
-        let urlString = "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
-        if let url = URL(string: urlString) {
-            NSWorkspace.shared.open(url)
-        }
-    }
-}
-
-/// グローバルショートカットを「押している間」検知する。
-/// keyDown で onPress、keyUp で onRelease を呼ぶ（キーリピートは無視）。
+/// Carbon の RegisterEventHotKey でグローバルショートカットを「押している間」検知する。
 ///
-/// NSEvent のグローバルキー監視にはアクセシビリティ権限が必要。
-/// キーを横取りしない読み取り専用のため CGEventTap は使わない。
+/// Carbon ホットキーは **アクセシビリティ権限を必要としない**（NSEvent のグローバルキー監視と違う点）。
+/// 押下で onPress、離すと onRelease を呼ぶ。
 final class ShortcutMonitor {
     var onPress: (() -> Void)?
     var onRelease: (() -> Void)?
 
     private var combo: KeyCombo
-    private var monitors: [Any] = []
-    private var isDown = false
+    private var hotKeyRef: EventHotKeyRef?
+    private var handlerRef: EventHandlerRef?
+    private var started = false
+
+    private static let signature: OSType = 0x4352_6E67  // 'CRng'
 
     init(combo: KeyCombo) {
         self.combo = combo
@@ -71,55 +51,79 @@ final class ShortcutMonitor {
 
     func updateCombo(_ combo: KeyCombo) {
         self.combo = combo
-        isDown = false
-    }
-
-    var isRunning: Bool { !monitors.isEmpty }
-
-    func start() {
-        guard monitors.isEmpty else { return }
-
-        if let g1 = NSEvent.addGlobalMonitorForEvents(matching: .keyDown, handler: { [weak self] e in
-            self?.handleKeyDown(e)
-        }) { monitors.append(g1) }
-
-        if let g2 = NSEvent.addGlobalMonitorForEvents(matching: .keyUp, handler: { [weak self] e in
-            self?.handleKeyUp(e)
-        }) { monitors.append(g2) }
-
-        // 自アプリがアクティブな時はグローバル監視が呼ばれないのでローカルも張る。
-        if let l1 = NSEvent.addLocalMonitorForEvents(matching: .keyDown, handler: { [weak self] e in
-            self?.handleKeyDown(e); return e
-        }) { monitors.append(l1) }
-
-        if let l2 = NSEvent.addLocalMonitorForEvents(matching: .keyUp, handler: { [weak self] e in
-            self?.handleKeyUp(e); return e
-        }) { monitors.append(l2) }
-    }
-
-    func stop() {
-        monitors.forEach { NSEvent.removeMonitor($0) }
-        monitors.removeAll()
-        isDown = false
-    }
-
-    private func matches(_ e: NSEvent) -> Bool {
-        let mods = e.modifierFlags.intersection(KeyCombo.trackedModifiers)
-        let wanted = combo.modifiers.intersection(KeyCombo.trackedModifiers)
-        return e.keyCode == combo.keyCode && mods == wanted
-    }
-
-    private func handleKeyDown(_ e: NSEvent) {
-        guard matches(e) else { return }
-        if !isDown {            // キーリピートを1回押下として扱う
-            isDown = true
-            onPress?()
+        if started {
+            unregisterHotKey()
+            registerHotKey()
         }
     }
 
-    private func handleKeyUp(_ e: NSEvent) {
-        guard isDown, e.keyCode == combo.keyCode else { return }
-        isDown = false
-        onRelease?()
+    var isRunning: Bool { started }
+
+    func start() {
+        guard !started else { return }
+        installHandler()
+        registerHotKey()
+        started = true
+    }
+
+    func stop() {
+        unregisterHotKey()
+        if let handlerRef {
+            RemoveEventHandler(handlerRef)
+            self.handlerRef = nil
+        }
+        started = false
+    }
+
+    private func installHandler() {
+        guard handlerRef == nil else { return }
+        var specs = [
+            EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed)),
+            EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyReleased)),
+        ]
+        let userData = Unmanaged.passUnretained(self).toOpaque()
+        InstallEventHandler(GetApplicationEventTarget(), Self.handler, 2, &specs, userData, &handlerRef)
+    }
+
+    private func registerHotKey() {
+        guard hotKeyRef == nil else { return }
+        let id = EventHotKeyID(signature: Self.signature, id: 1)
+        RegisterEventHotKey(
+            UInt32(combo.keyCode),
+            Self.carbonModifiers(combo.modifiers),
+            id,
+            GetApplicationEventTarget(),
+            0,
+            &hotKeyRef
+        )
+    }
+
+    private func unregisterHotKey() {
+        if let hotKeyRef {
+            UnregisterEventHotKey(hotKeyRef)
+            self.hotKeyRef = nil
+        }
+    }
+
+    private static func carbonModifiers(_ flags: NSEvent.ModifierFlags) -> UInt32 {
+        var c: UInt32 = 0
+        if flags.contains(.command) { c |= UInt32(cmdKey) }
+        if flags.contains(.option)  { c |= UInt32(optionKey) }
+        if flags.contains(.control) { c |= UInt32(controlKey) }
+        if flags.contains(.shift)   { c |= UInt32(shiftKey) }
+        return c
+    }
+
+    // 非キャプチャクロージャなので C 関数ポインタ（EventHandlerUPP）として渡せる。
+    private static let handler: EventHandlerUPP = { _, event, userData -> OSStatus in
+        guard let event, let userData else { return noErr }
+        let monitor = Unmanaged<ShortcutMonitor>.fromOpaque(userData).takeUnretainedValue()
+        let kind = GetEventKind(event)
+        if kind == UInt32(kEventHotKeyPressed) {
+            monitor.onPress?()
+        } else if kind == UInt32(kEventHotKeyReleased) {
+            monitor.onRelease?()
+        }
+        return noErr
     }
 }
