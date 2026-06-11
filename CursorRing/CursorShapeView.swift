@@ -43,6 +43,11 @@ final class CursorShapeView: NSView {
     // AppKit デフォルトの左下原点を使う（グローバル座標と揃える）。
     override var isFlipped: Bool { false }
 
+    /// リングの表示/非表示（カーソルがいない画面では隠す）。
+    func setRingHidden(_ hidden: Bool) {
+        shapeLayer.isHidden = hidden
+    }
+
     private func redraw() {
         let rect = CGRect(
             x: center.x - shapeWidth / 2,
