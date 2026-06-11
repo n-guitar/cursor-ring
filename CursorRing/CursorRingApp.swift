@@ -16,7 +16,7 @@ struct CursorRingApp: App {
             Button(appDelegate.overlay.isVisible ? "サークルを隠す" : "サークルを表示（テスト）") {
                 appDelegate.overlay.toggle()
             }
-            Text("「\(AppSettings.shared.shortcut.displayString)」を押している間だけ表示")
+            Text("「\(AppSettings.shared.shortcut.displayString)」タップで表示/長押しで一時表示・矢印キーで伸縮")
 
             Divider()
 

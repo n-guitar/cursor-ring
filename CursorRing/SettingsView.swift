@@ -31,12 +31,16 @@ struct SettingsView: View {
                         recording ? stopRecording() : startRecording()
                     }
                 }
-                Text("⌃ ⌥ ⇧ ⌘ のいずれかと組み合わせて記録してください。特別な権限は不要です。")
+                Text("⌃ ⌥ ⇧ ⌘ との組み合わせ、または F1〜F20 単独で記録できます。特別な権限は不要です。")
+                    .font(.caption).foregroundColor(.secondary)
+                Text("表示中は ↑↓ で縦、←→ で横に伸縮できます（その間ブラウザ等には影響しません）。")
+                    .font(.caption).foregroundColor(.secondary)
+                Text("Fキー単独を使う場合、システム設定 >  キーボードで「F1, F2 等を標準のファンクションキーとして使用」を ON にするか Fn 併用が必要です。")
                     .font(.caption).foregroundColor(.secondary)
             }
         }
         .formStyle(.grouped)
-        .frame(width: 440, height: 480)
+        .frame(width: 460, height: 560)
         .onDisappear { stopRecording() }
     }
 
@@ -55,9 +59,11 @@ struct SettingsView: View {
         recording = true
         recorderMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let mods = event.modifierFlags.intersection(KeyCombo.trackedModifiers)
-            // 修飾キーなしの単独キーは誤爆防止のため無効にする。
-            guard !mods.isEmpty else { return nil }
-            let label = (event.charactersIgnoringModifiers ?? "").uppercased()
+            let isFunctionKey = KeyNames.isFunctionKey(event.keyCode)
+            // 修飾キー無しの単独キーはファンクションキーのときだけ許可（誤爆防止）。
+            guard !mods.isEmpty || isFunctionKey else { return nil }
+            let label = KeyNames.label(for: event.keyCode)
+                ?? (event.charactersIgnoringModifiers ?? "").uppercased()
             settings.shortcut = KeyCombo(keyCode: event.keyCode, modifiers: mods, keyLabel: label)
             stopRecording()
             return nil   // 記録中のキーは他へ流さない

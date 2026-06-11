@@ -8,7 +8,7 @@ final class OverlayController: ObservableObject {
     private var window: OverlayWindow?
     private var shapeView: CursorShapeView?
     private let tracker = MouseTracker()
-    private let scroll = ScrollMonitor()
+    private let resizeKeys = ResizeKeyMonitor()
     private var settingsCancellable: AnyCancellable?
 
     /// 伸縮の下限・上限（設定スライダーと揃える）。
@@ -46,21 +46,21 @@ final class OverlayController: ObservableObject {
         }
         tracker.start()
 
-        // スクロールで縦横を伸縮（上下→縦、左右→横）。変更は設定に反映され即描画される。
-        scroll.onResize = { dWidth, dHeight in
+        // 矢印キーで縦横を伸縮（↑↓→縦、←→→横）。変更は設定に反映され即描画される。
+        resizeKeys.onResize = { dWidth, dHeight in
             let s = AppSettings.shared
             let range = Self.sizeRange
             s.width = min(range.upperBound, max(range.lowerBound, s.width + Double(dWidth)))
             s.height = min(range.upperBound, max(range.lowerBound, s.height + Double(dHeight)))
         }
-        scroll.start()
+        resizeKeys.start()
 
         isVisible = true
     }
 
     func hide() {
         tracker.stop()
-        scroll.stop()
+        resizeKeys.stop()
         window?.orderOut(nil)
         window = nil
         shapeView = nil

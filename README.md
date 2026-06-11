@@ -2,7 +2,8 @@
 
 [![Build](https://github.com/n-guitar/cursor-ring/actions/workflows/build.yml/badge.svg)](https://github.com/n-guitar/cursor-ring/actions/workflows/build.yml)
 
-グローバルショートカットを押している間、マウスカーソルに追従してサークルを表示する macOS メニューバー常駐アプリ。
+グローバルショートカットでマウスカーソルに追従するサークルを表示する macOS メニューバー常駐アプリ。
+ショートカットは「タップで出したまま／長押しで離すまで」の両対応。表示中は矢印キーで伸縮できる。
 
 - 言語/UI: Swift + SwiftUI（`MenuBarExtra` / 設定画面）+ AppKit（オーバーレイ描画・イベント監視）
 - 対象: macOS 13 (Ventura) 以降
@@ -12,8 +13,8 @@
 1. Xcode で macOS App（SwiftUI / `MenuBarExtra`）を新規作成。`LSUIElement=YES` ✅
 2. 透明・クリック透過の `NSWindow` に固定の円を描く ✅
 3. `NSEvent.mouseLocation` でマウス追従 ✅
-4. グローバルショートカット（押している間だけ表示）— Carbon ホットキーで**権限不要** ✅
-5. 色・形・サイズ・ショートカットの設定 UI（`@AppStorage` / `UserDefaults`）✅
+4. グローバルショートカット（タップでトグル / 長押しで一時表示）— Carbon ホットキーで**権限不要** ✅
+5. 色・形・サイズ・ショートカットの設定 UI（`@AppStorage` / `UserDefaults`）+ 矢印キー伸縮 ✅
 6. （配布するなら）署名・Notarization・権限誘導 — **未着手**（不可逆な配布の境界のため保留）
 
 配布（署名/Notarization）は後回し。まずは個人利用版。
@@ -27,7 +28,10 @@
   - 全ディスプレイを覆う矩形に対応（マルチディスプレイで追従）
 - `CAShapeLayer` でサークル描画（`CursorShapeView`）。形は `enum CursorShape { ring, square }`（縦横別指定で楕円・長方形に）
 - ショートカットは **Carbon `RegisterEventHotKey`**（`ShortcutMonitor`）で検知 — **アクセシビリティ権限不要**
-- マウス追従（`MouseTracker`）・スクロール伸縮（`ScrollMonitor`）は `NSEvent` のグローバル監視（マウス系は権限不要）
+  - タップ（短押し）＝出したまま、もう一度タップで消す。長押し＝離すまで表示
+  - F1〜F20 単独も割り当て可（要・標準ファンクションキー設定 or Fn 併用）
+- 表示中は矢印キーで伸縮（`ResizeKeyMonitor`、Carbon ホットキーで登録＝他アプリに漏れない）。↑↓＝縦、←→＝横
+- マウス追従（`MouseTracker`）は `NSEvent` のグローバル監視（マウス系は権限不要）
 - 設定画面（`SettingsView`）: 色・形・横幅・縦幅・線幅・ショートカット変更
 - 設定は `UserDefaults` に永続化（`AppSettings`）
 
@@ -79,8 +83,8 @@ open CursorRing.xcodeproj
 
 Xcode で Run（⌘R）。Dock には出ず、メニューバーに破線円アイコンが出る。
 
-1. 既定ショートカット **⌃⌥R** を押している間、マウスに追従して赤いリングが出る（権限付与は不要）
-2. リング表示中にスクロールで伸縮（上下スクロール＝縦、左右スクロール＝横。トラックパッドは2本指で縦横自在）
+1. 既定ショートカット **⌃⌥R**（設定で F1 等にも変更可）。タップで出したまま、もう一度タップで消す。長押しなら離すまで表示（権限付与は不要）
+2. リング表示中に矢印キーで伸縮（↑↓＝縦、←→＝横。押しっぱなしで連続。他アプリには影響しない）
 3. メニューの「設定…」で形・色・横幅・縦幅・線の太さ・ショートカットを変更できる
 4. メニューの「サークルを表示（テスト）」で固定表示の確認もできる
 
@@ -92,12 +96,12 @@ Xcode で Run（⌘R）。Dock には出ず、メニューバーに破線円ア�
 CursorRing/
   CursorRingApp.swift            @main / MenuBarExtra（メニュー）
   AppDelegate.swift              ショートカット監視と表示の配線
-  OverlayController.swift        オーバーレイ生成・表示・マウス追従・スクロール伸縮・設定反映
+  OverlayController.swift        オーバーレイ生成・表示・マウス追従・矢印キー伸縮・設定反映
   OverlayWindow.swift            透明・クリック透過・最前面の NSWindow
   CursorShapeView.swift          CAShapeLayer でサークルを描く NSView
   CursorShape.swift              形の enum（パス差し替え）
   MouseTracker.swift             NSEvent によるマウス追従
-  ScrollMonitor.swift            NSEvent によるスクロール伸縮
+  ResizeKeyMonitor.swift         Carbon ホットキーによる矢印キー伸縮（権限不要・他アプリに漏れない）
   ShortcutMonitor.swift          Carbon RegisterEventHotKey によるホットキー検知（権限不要）
   AppSettings.swift              設定の保持・永続化（UserDefaults）
   SettingsView.swift             設定画面（SwiftUI）
