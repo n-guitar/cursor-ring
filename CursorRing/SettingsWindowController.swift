@@ -12,6 +12,7 @@ final class SettingsWindowController {
             window.title = "CursorRing 設定"
             window.styleMask = [.titled, .closable, .miniaturizable]
             window.isReleasedWhenClosed = false
+            window.setContentSize(NSSize(width: 440, height: 560))
             window.center()
             self.window = window
         }

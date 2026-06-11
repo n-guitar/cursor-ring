@@ -61,7 +61,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 440)
+        .frame(width: 440, height: 560)
         .onAppear { accessibilityTrusted = Accessibility.isTrusted }
         .onDisappear { stopRecording() }
     }
