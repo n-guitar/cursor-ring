@@ -53,7 +53,20 @@
   CI はコンパイルのみを保証する。実際の挙動はお手元で ⌘R して確認してほしい。
   おかしい点があれば指摘してくれれば直す。
 
-## ビルド・実行
+## ダウンロードして使う（Xcode 不要）
+
+push のたびに CI が `.app` をビルドし、成果物として添付する。
+
+1. GitHub の Actions タブ → 対象の Build 実行 → 下部 Artifacts の `CursorRing-app` を取得
+2. zip を展開し、`CursorRing.app` を Applications などに置く
+3. **未署名のため初回起動は Gatekeeper に止められる**。回避はどちらか:
+   - `CursorRing.app` を右クリック →「開く」→ ダイアログで「開く」
+   - もしくはターミナルで `xattr -dr com.apple.quarantine /path/to/CursorRing.app`
+4. 起動後、アクセシビリティ権限を付与（システム設定 > プライバシーとセキュリティ > アクセシビリティ）
+
+> CI 産の `.app` は未署名・未 Notarize。自分の Mac で動かす個人利用向け。配布は別途署名 + Notarization が必要。
+
+## ビルド・実行（Xcode）
 
 ```sh
 open CursorRing.xcodeproj

@@ -20,7 +20,19 @@ jobs:
           xcodebuild \
             -project CursorRing.xcodeproj \
             -target CursorRing \
-            -configuration Debug \
+            -configuration Release \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
             build
+
+      - name: Package .app
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            build/Release/CursorRing.app CursorRing.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CursorRing-app
+          path: CursorRing.zip
+          if-no-files-found: error
