@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "リリースタグ（例: v0.1.0）"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build (Release, no code signing)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project CursorRing.xcodeproj \
+            -target CursorRing \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package .app
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            build/Release/CursorRing.app CursorRing.zip
+
+      - name: Create / update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          NOTES="未署名・未 Notarize の個人利用向けビルドです。初回起動は CursorRing.app を右クリック →「開く」、または \`xattr -dr com.apple.quarantine /パス/CursorRing.app\` で Gatekeeper を回避してください。"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" CursorRing.zip --clobber
+          else
+            gh release create "$TAG" CursorRing.zip --title "$TAG" --notes "$NOTES"
+          fi
