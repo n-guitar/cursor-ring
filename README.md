@@ -25,8 +25,8 @@
   - `.borderless` / `backgroundColor = .clear` / `isOpaque = false`
   - `ignoresMouseEvents = true`（クリック透過）/ `level = .screenSaver`
   - 全ディスプレイを覆う矩形に対応（マルチディスプレイで追従）
-- `CAShapeLayer` でサークル描画（`CursorShapeView`）。形は `enum CursorShape { circle, ring, square, cross }`
-- `NSEvent` でマウス追従（`MouseTracker`）/ グローバルキー監視（`ShortcutMonitor`）
+- `CAShapeLayer` でサークル描画（`CursorShapeView`）。形は `enum CursorShape { ring, square }`（縦横別指定で楕円・長方形に）
+- `NSEvent` でマウス追従（`MouseTracker`）/ グローバルキー監視（`ShortcutMonitor`）/ スクロール伸縮（`ScrollMonitor`）
 - 設定画面（`SettingsView`）: 色・形・サイズ・線幅・ショートカット変更・権限状態
 - 設定は `UserDefaults` に永続化（`AppSettings`）
 
@@ -77,8 +77,9 @@ Xcode で Run（⌘R）。Dock には出ず、メニューバーに破線円ア�
 1. 初回起動時、グローバルキー監視のため**アクセシビリティ権限**を求められる
    （システム設定 > プライバシーとセキュリティ > アクセシビリティ で CursorRing を許可）
 2. 既定ショートカット **⌃⌥R** を押している間、マウスに追従して赤いリングが出る
-3. メニューの「設定…」で色・形・サイズ・ショートカットを変更できる
-4. メニューの「サークルを表示（テスト）」で固定表示の確認もできる
+3. リング表示中にスクロールで伸縮（上下スクロール＝縦、左右スクロール＝横。トラックパッドは2本指で縦横自在）
+4. メニューの「設定…」で形・色・横幅・縦幅・線の太さ・ショートカットを変更できる
+5. メニューの「サークルを表示（テスト）」で固定表示の確認もできる
 
 > ローカル実行のみなら署名は「Sign to Run Locally」で動く。配布時に Apple Developer 署名 + Notarization が必要（ステップ6）。
 
