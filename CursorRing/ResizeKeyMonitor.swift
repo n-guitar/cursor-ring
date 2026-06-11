@@ -106,7 +106,7 @@ final class ResizeKeyMonitor {
         var hkID = EventHotKeyID()
         GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID),
                           nil, MemoryLayout<EventHotKeyID>.size, nil, &hkID)
-        guard hkID.signature == Self.signature else { return noErr }
+        guard hkID.signature == ResizeKeyMonitor.signature else { return noErr }
         let pressed = GetEventKind(event) == UInt32(kEventHotKeyPressed)
         monitor.handle(id: hkID.id, pressed: pressed)
         return noErr

@@ -122,7 +122,7 @@ final class ShortcutMonitor {
         GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID),
                           nil, MemoryLayout<EventHotKeyID>.size, nil, &hkID)
         // メインのショートカット（id == 1）だけ扱う。矢印キー(2..5)は ResizeKeyMonitor の担当。
-        guard hkID.signature == Self.signature, hkID.id == 1 else { return noErr }
+        guard hkID.signature == ShortcutMonitor.signature, hkID.id == 1 else { return noErr }
         let kind = GetEventKind(event)
         if kind == UInt32(kEventHotKeyPressed) {
             monitor.onPress?()
