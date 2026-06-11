@@ -19,7 +19,6 @@
 		1C000000000000000000000A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000A /* SettingsView.swift */; };
 		1C000000000000000000000B /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000B /* SettingsWindowController.swift */; };
 		1C000000000000000000000C /* NSColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000C /* NSColor+Hex.swift */; };
-		1C000000000000000000000D /* ResizeKeyMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000D /* ResizeKeyMonitor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,7 +35,6 @@
 		1B000000000000000000000A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		1B000000000000000000000B /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 		1B000000000000000000000C /* NSColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSColor+Hex.swift"; sourceTree = "<group>"; };
-		1B000000000000000000000D /* ResizeKeyMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizeKeyMonitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,7 +79,6 @@
 				1B000000000000000000000A /* SettingsView.swift */,
 				1B000000000000000000000B /* SettingsWindowController.swift */,
 				1B000000000000000000000C /* NSColor+Hex.swift */,
-				1B000000000000000000000D /* ResizeKeyMonitor.swift */,
 			);
 			path = CursorRing;
 			sourceTree = "<group>";
@@ -166,7 +163,6 @@
 				1C000000000000000000000A /* SettingsView.swift in Sources */,
 				1C000000000000000000000B /* SettingsWindowController.swift in Sources */,
 				1C000000000000000000000C /* NSColor+Hex.swift in Sources */,
-				1C000000000000000000000D /* ResizeKeyMonitor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

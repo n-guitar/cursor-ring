@@ -8,16 +8,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var shortcutCancellable: AnyCancellable?
 
-    // タップ＝トグル / 長押し＝一時表示 を見分ける状態。
+    // タップ＝トグル / 長押し＝一時表示・伸縮 を見分ける状態。
+    //
+    // キー押下中はスクロール捕捉 ON（2本指スクロールで伸縮、下のアプリに漏れない）。
+    // - 非表示からタップ        → 出したまま（クリック透過に戻す）
+    // - 非表示から長押し        → 押している間だけ表示、離すと消える
+    // - 出したまま中にタップ    → 消す
+    // - 出したまま中に長押し    → 押している間は伸縮モード、離しても出したまま
     private enum ShowState {
-        case hidden      // 非表示
-        case pressing    // 押下中（タップか長押しか未確定）
-        case toggledOn   // タップで出したまま
+        case hidden
+        case pressingFromHidden   // 非表示から押下中（タップ/長押し未確定）
+        case toggledOn            // タップで出したまま
+        case pressingFromShown    // 出したまま中に押下中（タップ=消す / 長押し=伸縮）
     }
     private var showState: ShowState = .hidden
-    private var pressDownAt: Date?
-    private var keyIsDown = false
-    private let tapThreshold: TimeInterval = 0.35   // これ未満の押下はタップ＝トグル
+    private var pressDownAt = Date()
+    private let tapThreshold: TimeInterval = 0.35   // これ未満の押下はタップ
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         shortcuts.onPress = { [weak self] in self?.handlePress() }
@@ -32,37 +38,42 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         shortcuts.start()
     }
 
-    /// ショートカット押下。
-    /// - 非表示 → 表示して押下中（タップ/長押し未確定）
-    /// - 出したまま → もう一度押されたので消す
     private func handlePress() {
-        if keyIsDown { return }   // キーの自動リピートを無視
-        keyIsDown = true
-
+        pressDownAt = Date()
         switch showState {
-        case .toggledOn:
-            overlay.hide()
-            showState = .hidden
         case .hidden:
             overlay.show()
-            showState = .pressing
-            pressDownAt = Date()
-        case .pressing:
+            overlay.setScrollCapture(true)
+            showState = .pressingFromHidden
+        case .toggledOn:
+            overlay.setScrollCapture(true)
+            showState = .pressingFromShown
+        case .pressingFromHidden, .pressingFromShown:
             break
         }
     }
 
-    /// ショートカットを離した。押下が短ければタップ＝出したまま、長ければ長押し＝消す。
     private func handleRelease() {
-        keyIsDown = false
-        guard showState == .pressing else { return }
-
-        let held = Date().timeIntervalSince(pressDownAt ?? Date())
-        if held < tapThreshold {
-            showState = .toggledOn      // タップ → 出したまま
-        } else {
-            overlay.hide()              // 長押し → 離したらしまう
-            showState = .hidden
+        let isTap = Date().timeIntervalSince(pressDownAt) < tapThreshold
+        switch showState {
+        case .pressingFromHidden:
+            if isTap {
+                overlay.setScrollCapture(false)   // タップ → 出したまま（クリック透過に戻す）
+                showState = .toggledOn
+            } else {
+                overlay.hide()                    // 長押し → 離したらしまう
+                showState = .hidden
+            }
+        case .pressingFromShown:
+            if isTap {
+                overlay.hide()                    // タップ → 消す
+                showState = .hidden
+            } else {
+                overlay.setScrollCapture(false)   // 長押し（伸縮）→ 出したままに戻る
+                showState = .toggledOn
+            }
+        case .hidden, .toggledOn:
+            break
         }
     }
 }

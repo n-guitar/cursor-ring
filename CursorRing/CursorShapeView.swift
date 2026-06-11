@@ -15,6 +15,20 @@ final class CursorShapeView: NSView {
     /// 描画中心（ビュー座標 = 左下原点）。
     var center: NSPoint = .zero { didSet { redraw() } }
 
+    /// スクロール捕捉中（クリック透過を一時解除している間）に呼ばれる。(dWidth, dHeight)
+    var onScroll: ((CGFloat, CGFloat) -> Void)?
+
+    override func scrollWheel(with event: NSEvent) {
+        // マウスホイール（行単位）は粗いので拡大、トラックパッド（精密）はそのまま。
+        let scale: CGFloat = event.hasPreciseScrollingDeltas ? 1.0 : 10.0
+        let dHeight = event.scrollingDeltaY * scale
+        let dWidth = event.scrollingDeltaX * scale
+        if dWidth != 0 || dHeight != 0 {
+            onScroll?(dWidth, dHeight)
+        }
+        // 下のアプリには渡さない（このビューで消費する）。
+    }
+
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true

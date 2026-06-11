@@ -33,7 +33,7 @@ struct SettingsView: View {
                 }
                 Text("⌃ ⌥ ⇧ ⌘ との組み合わせ、または F1〜F20 単独で記録できます。特別な権限は不要です。")
                     .font(.caption).foregroundColor(.secondary)
-                Text("表示中は ↑↓ で縦、←→ で横に伸縮できます（その間ブラウザ等には影響しません）。")
+                Text("タップ＝出したまま（もう一度タップで消す）／長押し＝離すまで表示。キーを押しながら2本指スクロールで伸縮（その間ブラウザ等には影響しません）。")
                     .font(.caption).foregroundColor(.secondary)
                 Text("Fキー単独を使う場合、システム設定 >  キーボードで「F1, F2 等を標準のファンクションキーとして使用」を ON にするか Fn 併用が必要です。")
                     .font(.caption).foregroundColor(.secondary)

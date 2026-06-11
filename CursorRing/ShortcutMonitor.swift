@@ -32,8 +32,10 @@ struct KeyCombo: Equatable {
 
 /// Carbon の RegisterEventHotKey でグローバルショートカットを「押している間」検知する。
 ///
-/// Carbon ホットキーは **アクセシビリティ権限を必要としない**（NSEvent のグローバルキー監視と違う点）。
-/// 押下で onPress、離すと onRelease を呼ぶ。
+/// - Carbon ホットキーは **アクセシビリティ権限を必要としない**
+/// - 「離した」検知は Carbon の released イベントに頼らない。修飾キーを先に離すと
+///   released が届かないことがあるため、**キーの物理状態を CGEventSource.keyState で
+///   ポーリング**して確実に検知する（これも権限不要）。
 final class ShortcutMonitor {
     var onPress: (() -> Void)?
     var onRelease: (() -> Void)?
@@ -42,6 +44,8 @@ final class ShortcutMonitor {
     private var hotKeyRef: EventHotKeyRef?
     private var handlerRef: EventHandlerRef?
     private var started = false
+    private var isDown = false
+    private var releaseTimer: Timer?
 
     private static let signature: OSType = 0x4352_6E67  // 'CRng'
 
@@ -72,6 +76,9 @@ final class ShortcutMonitor {
             RemoveEventHandler(handlerRef)
             self.handlerRef = nil
         }
+        releaseTimer?.invalidate()
+        releaseTimer = nil
+        isDown = false
         started = false
     }
 
@@ -79,10 +86,9 @@ final class ShortcutMonitor {
         guard handlerRef == nil else { return }
         var specs = [
             EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed)),
-            EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyReleased)),
         ]
         let userData = Unmanaged.passUnretained(self).toOpaque()
-        InstallEventHandler(GetApplicationEventTarget(), Self.handler, 2, &specs, userData, &handlerRef)
+        InstallEventHandler(GetApplicationEventTarget(), Self.handler, 1, &specs, userData, &handlerRef)
     }
 
     private func registerHotKey() {
@@ -105,6 +111,28 @@ final class ShortcutMonitor {
         }
     }
 
+    fileprivate func handlePressed() {
+        guard !isDown else { return }   // 自動リピートを無視
+        isDown = true
+        onPress?()
+        startReleasePolling()
+    }
+
+    /// キーの物理状態を 30ms ごとに確認し、離れたら onRelease を1回だけ呼ぶ。
+    private func startReleasePolling() {
+        releaseTimer?.invalidate()
+        let keyCode = CGKeyCode(combo.keyCode)
+        releaseTimer = Timer.scheduledTimer(withTimeInterval: 0.03, repeats: true) { [weak self] timer in
+            guard let self else { timer.invalidate(); return }
+            if !CGEventSource.keyState(.combinedSessionState, key: keyCode) {
+                timer.invalidate()
+                self.releaseTimer = nil
+                self.isDown = false
+                self.onRelease?()
+            }
+        }
+    }
+
     private static func carbonModifiers(_ flags: NSEvent.ModifierFlags) -> UInt32 {
         var c: UInt32 = 0
         if flags.contains(.command) { c |= UInt32(cmdKey) }
@@ -116,19 +144,9 @@ final class ShortcutMonitor {
 
     // 非キャプチャクロージャなので C 関数ポインタ（EventHandlerUPP）として渡せる。
     private static let handler: EventHandlerUPP = { _, event, userData -> OSStatus in
-        guard let event, let userData else { return noErr }
+        guard let userData else { return noErr }
         let monitor = Unmanaged<ShortcutMonitor>.fromOpaque(userData).takeUnretainedValue()
-        var hkID = EventHotKeyID()
-        GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID),
-                          nil, MemoryLayout<EventHotKeyID>.size, nil, &hkID)
-        // メインのショートカット（id == 1）だけ扱う。矢印キー(2..5)は ResizeKeyMonitor の担当。
-        guard hkID.signature == ShortcutMonitor.signature, hkID.id == 1 else { return noErr }
-        let kind = GetEventKind(event)
-        if kind == UInt32(kEventHotKeyPressed) {
-            monitor.onPress?()
-        } else if kind == UInt32(kEventHotKeyReleased) {
-            monitor.onRelease?()
-        }
+        monitor.handlePressed()
         return noErr
     }
 }
