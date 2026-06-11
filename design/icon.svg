@@ -1,0 +1,34 @@
+<svg viewBox="0 0 1024 1024" width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="squircle">
+      <rect x="0" y="0" width="1024" height="1024" rx="228" ry="228"/>
+    </clipPath>
+  </defs>
+
+  <!-- 背景(3色・斜めの帯) -->
+  <g clip-path="url(#squircle)">
+    <rect width="1024" height="1024" fill="#00aaff"/>
+    <path d="M0 0 L1024 0 L1024 120 L0 330 Z" fill="#ffcc00"/>
+    <path d="M0 860 L1024 600 L1024 1024 L0 1024 Z" fill="#00cc99"/>
+  </g>
+
+  <!-- 太い赤いリング -->
+  <circle cx="512" cy="512" r="320" fill="none" stroke="#E63946" stroke-width="64"/>
+
+  <!-- カーソルキャラ(リングの中央) -->
+  <g stroke="#1D1D1D" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M406 349
+             L406 647
+             L473 583
+             L516 675
+             L572 649
+             L528 559
+             L618 559
+             Z"
+          fill="#FFFFFF"/>
+  </g>
+
+  <!-- 目(縦に伸ばした楕円・黒) -->
+  <ellipse cx="446" cy="498" rx="11" ry="25" fill="#1D1D1D"/>
+  <ellipse cx="488" cy="498" rx="11" ry="25" fill="#1D1D1D"/>
+</svg>

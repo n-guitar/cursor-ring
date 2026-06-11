@@ -108,6 +108,10 @@ CursorRing/
 ### 今後（未着手）
 
 - 配布する場合の署名・Notarization（Apple Developer 登録が必要）
-- アプリアイコン（AppIcon）の追加
+
+### アイコン
+
+アプリアイコンは `design/icon.svg` がソース。`CursorRing/Assets.xcassets/AppIcon.appiconset` の
+各サイズ PNG は SVG から生成している（差し替える場合は SVG を編集して各サイズを再生成）。
 
 </details>
