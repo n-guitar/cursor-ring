@@ -21,14 +21,14 @@
 
 ## インストール（Xcode 不要）
 
-1. 上の [![Build](https://github.com/n-guitar/cursor-ring/actions/workflows/build.yml/badge.svg)](https://github.com/n-guitar/cursor-ring/actions/workflows/build.yml) バッジか、GitHub の **Actions** タブから最新の「Build」を開く
-2. ページ下部 **Artifacts** の `CursorRing-app` をダウンロードして展開
-3. `CursorRing.app` を「アプリケーション」フォルダなどに移動
-4. **初回だけ Gatekeeper に止められる**ので、どちらかで回避:
+1. [**Releases**](https://github.com/n-guitar/cursor-ring/releases/latest) を開き、最新版の `CursorRing.zip` をダウンロードして展開
+2. `CursorRing.app` を「アプリケーション」フォルダなどに移動
+3. **初回だけ Gatekeeper に止められる**ので、どちらかで回避:
    - `CursorRing.app` を右クリック →「開く」→ ダイアログで「開く」
    - またはターミナルで `xattr -dr com.apple.quarantine /アプリのパス/CursorRing.app`
 
 > 配布用に署名・公証（Notarization）はしていない個人利用向けビルドです。そのため初回だけ上の操作が要ります。
+> （最新コミットの試用ビルドが欲しい場合は Actions タブの各 Build 実行の Artifacts からも取得できます）
 
 ## 使い方
 
@@ -78,7 +78,14 @@ open CursorRing.xcodeproj
 Xcode で Run（⌘R）。ローカル実行のみなら署名は「Sign to Run Locally」で動く。
 
 push のたびに `.github/workflows/build.yml` が macOS ランナー（Xcode 15.4、`arm64`＋`x86_64`、
-deployment target macOS 13.0）で `xcodebuild` し、`.app` を Artifacts として添付する。
+deployment target macOS 13.0）で `xcodebuild` し、試用用に `.app` を Artifacts として添付する。
+
+配布用は `.github/workflows/release.yml`：`v*` タグの push（または Actions の手動実行）で
+Release ビルドを作り、`CursorRing.zip` を GitHub Release に添付する。タグを打つ例:
+
+```sh
+git tag v0.1.0 && git push origin v0.1.0
+```
 
 ### ファイル構成
 
