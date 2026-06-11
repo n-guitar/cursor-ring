@@ -2,12 +2,13 @@ import AppKit
 import QuartzCore
 
 /// CAShapeLayer でサークルを描く透明ビュー。
-/// 色・形・サイズ・線幅・描画中心をプロパティで可変にしてある。
+/// 色・形・横幅・縦幅・線幅・描画中心をプロパティで可変にしてある。
 final class CursorShapeView: NSView {
     private let shapeLayer = CAShapeLayer()
 
-    var shape: CursorShape = .circle { didSet { redraw() } }
-    var diameter: CGFloat = 96 { didSet { redraw() } }
+    var shape: CursorShape = .ring { didSet { redraw() } }
+    var shapeWidth: CGFloat = 96 { didSet { redraw() } }
+    var shapeHeight: CGFloat = 96 { didSet { redraw() } }
     var lineWidth: CGFloat = 6 { didSet { redraw() } }
     var color: NSColor = .systemRed { didSet { redraw() } }
 
@@ -30,10 +31,10 @@ final class CursorShapeView: NSView {
 
     private func redraw() {
         let rect = CGRect(
-            x: center.x - diameter / 2,
-            y: center.y - diameter / 2,
-            width: diameter,
-            height: diameter
+            x: center.x - shapeWidth / 2,
+            y: center.y - shapeHeight / 2,
+            width: shapeWidth,
+            height: shapeHeight
         )
 
         // 位置・パスの暗黙アニメーションを切る（追従時のカクつき防止）。
@@ -41,15 +42,10 @@ final class CursorShapeView: NSView {
         CATransaction.setDisableActions(true)
 
         shapeLayer.path = shape.path(in: rect, lineWidth: lineWidth)
-        if shape.isFilled {
-            shapeLayer.fillColor = color.cgColor
-            shapeLayer.strokeColor = NSColor.clear.cgColor
-            shapeLayer.lineWidth = 0
-        } else {
-            shapeLayer.fillColor = NSColor.clear.cgColor
-            shapeLayer.strokeColor = color.cgColor
-            shapeLayer.lineWidth = lineWidth
-        }
+        shapeLayer.fillColor = NSColor.clear.cgColor   // 輪郭線のみ
+        shapeLayer.strokeColor = color.cgColor
+        shapeLayer.lineWidth = lineWidth
+        shapeLayer.lineJoin = .round
         shapeLayer.lineCap = .round
 
         CATransaction.commit()

@@ -61,7 +61,8 @@ final class OverlayController: ObservableObject {
         guard let view = shapeView else { return }
         let s = AppSettings.shared
         view.shape = s.shape
-        view.diameter = CGFloat(s.diameter)
+        view.shapeWidth = CGFloat(s.width)
+        view.shapeHeight = CGFloat(s.height)
         view.lineWidth = CGFloat(s.lineWidth)
         view.color = s.nsColor
     }

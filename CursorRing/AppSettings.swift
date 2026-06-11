@@ -11,7 +11,8 @@ final class AppSettings: ObservableObject {
 
     private enum Keys {
         static let shape = "shape"
-        static let diameter = "diameter"
+        static let width = "width"
+        static let height = "height"
         static let lineWidth = "lineWidth"
         static let colorHex = "colorHex"
         static let shortcutKeyCode = "shortcutKeyCode"
@@ -22,8 +23,11 @@ final class AppSettings: ObservableObject {
     @Published var shape: CursorShape {
         didSet { defaults.set(shape.rawValue, forKey: Keys.shape) }
     }
-    @Published var diameter: Double {
-        didSet { defaults.set(diameter, forKey: Keys.diameter) }
+    @Published var width: Double {
+        didSet { defaults.set(width, forKey: Keys.width) }
+    }
+    @Published var height: Double {
+        didSet { defaults.set(height, forKey: Keys.height) }
     }
     @Published var lineWidth: Double {
         didSet { defaults.set(lineWidth, forKey: Keys.lineWidth) }
@@ -48,7 +52,8 @@ final class AppSettings: ObservableObject {
         let shapeRaw = d.string(forKey: Keys.shape) ?? CursorShape.ring.rawValue
         shape = CursorShape(rawValue: shapeRaw) ?? .ring
 
-        diameter = (d.object(forKey: Keys.diameter) as? Double) ?? 96
+        width = (d.object(forKey: Keys.width) as? Double) ?? 96
+        height = (d.object(forKey: Keys.height) as? Double) ?? 96
         lineWidth = (d.object(forKey: Keys.lineWidth) as? Double) ?? 6
 
         let hex = d.string(forKey: Keys.colorHex) ?? "#FF3B30FF"

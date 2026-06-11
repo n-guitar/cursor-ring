@@ -8,6 +8,9 @@ struct SettingsView: View {
     @State private var recorderMonitor: Any?
     @State private var accessibilityTrusted = Accessibility.isTrusted
 
+    // 権限状態を 1 秒ごとに見直して表示を自動更新する。
+    private let pollTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
     var body: some View {
         Form {
             Section("見た目") {
@@ -19,19 +22,9 @@ struct SettingsView: View {
 
                 ColorPicker("色", selection: $settings.color, supportsOpacity: true)
 
-                HStack {
-                    Text("サイズ")
-                    Slider(value: $settings.diameter, in: 20...400)
-                    Text("\(Int(settings.diameter)) px").monospacedDigit().frame(width: 56, alignment: .trailing)
-                }
-
-                if settings.shape != .circle {
-                    HStack {
-                        Text("線の太さ")
-                        Slider(value: $settings.lineWidth, in: 1...40)
-                        Text("\(Int(settings.lineWidth)) px").monospacedDigit().frame(width: 56, alignment: .trailing)
-                    }
-                }
+                sliderRow(title: "横幅", value: $settings.width, range: 20...600)
+                sliderRow(title: "縦幅", value: $settings.height, range: 20...600)
+                sliderRow(title: "線の太さ", value: $settings.lineWidth, range: 1...40)
             }
 
             Section("ショートカット（押している間だけ表示）") {
@@ -56,7 +49,9 @@ struct SettingsView: View {
                         Button("システム設定を開く") { Accessibility.openSettings() }
                     }
                 }
-                Text("グローバルショートカットの検知にアクセシビリティ権限が必要です。許可後、しばらく待つか再起動すると有効になります。")
+                Text(accessibilityTrusted
+                     ? "ショートカット監視が有効です。"
+                     : "グローバルショートカットの検知に必要です。許可するとここが自動で「許可済み」に変わります。")
                     .font(.caption).foregroundColor(.secondary)
             }
         }
@@ -64,6 +59,20 @@ struct SettingsView: View {
         .frame(width: 440, height: 560)
         .onAppear { accessibilityTrusted = Accessibility.isTrusted }
         .onDisappear { stopRecording() }
+        .onReceive(pollTimer) { _ in
+            accessibilityTrusted = Accessibility.isTrusted
+        }
+    }
+
+    @ViewBuilder
+    private func sliderRow(title: String, value: Binding<Double>, range: ClosedRange<Double>) -> some View {
+        HStack {
+            Text(title)
+            Slider(value: value, in: range)
+            Text("\(Int(value.wrappedValue)) px")
+                .monospacedDigit()
+                .frame(width: 56, alignment: .trailing)
+        }
     }
 
     private func startRecording() {
