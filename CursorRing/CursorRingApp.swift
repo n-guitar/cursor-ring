@@ -8,23 +8,38 @@ struct CursorRingApp: App {
     var body: some Scene {
         // Dock に出さずメニューバー常駐（LSUIElement=YES と併用）。
         MenuBarExtra("Cursor Ring", systemImage: "circle.dashed") {
-            Button("設定…") { appDelegate.settingsWindow.show() }
-                .keyboardShortcut(",")
-
-            Divider()
-
-            Button(appDelegate.overlay.isVisible ? "サークルを隠す" : "サークルを表示（テスト）") {
-                appDelegate.overlay.toggle()
-            }
-            Text("「\(AppSettings.shared.shortcut.displayString)」タップで表示/長押しで一時表示・押しながらスクロールで伸縮")
-
-            Divider()
-
-            Button("CursorRing を終了") {
-                NSApplication.shared.terminate(nil)
-            }
-            .keyboardShortcut("q")
+            MenuContent(overlay: appDelegate.overlay, settingsWindow: appDelegate.settingsWindow)
         }
         .menuBarExtraStyle(.menu)
+    }
+}
+
+private struct MenuContent: View {
+    @ObservedObject var overlay: OverlayController
+    @ObservedObject private var settings = AppSettings.shared
+    let settingsWindow: SettingsWindowController
+
+    var body: some View {
+        let l = settings.l10n
+
+        Button(l.menuSettings) { settingsWindow.show() }
+            .keyboardShortcut(",")
+
+        Divider()
+
+        Button(overlay.isVisible ? l.menuHide : l.menuShowTest) {
+            overlay.toggle()
+        }
+        Button(l.menuToggleShape) {
+            settings.toggleShape()
+        }
+        Text(l.menuHint(settings.shortcut.displayString))
+
+        Divider()
+
+        Button(l.menuQuit) {
+            NSApplication.shared.terminate(nil)
+        }
+        .keyboardShortcut("q")
     }
 }

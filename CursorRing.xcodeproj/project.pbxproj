@@ -19,6 +19,7 @@
 		1C000000000000000000000A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000A /* SettingsView.swift */; };
 		1C000000000000000000000B /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000B /* SettingsWindowController.swift */; };
 		1C000000000000000000000C /* NSColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000C /* NSColor+Hex.swift */; };
+		1C000000000000000000000F /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000F /* Localization.swift */; };
 		1C000000000000000000000E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B000000000000000000000E /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +38,7 @@
 		1B000000000000000000000B /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 		1B000000000000000000000C /* NSColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSColor+Hex.swift"; sourceTree = "<group>"; };
 		1B000000000000000000000E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1B000000000000000000000F /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 				1B000000000000000000000A /* SettingsView.swift */,
 				1B000000000000000000000B /* SettingsWindowController.swift */,
 				1B000000000000000000000C /* NSColor+Hex.swift */,
+				1B000000000000000000000F /* Localization.swift */,
 				1B000000000000000000000E /* Assets.xcassets */,
 			);
 			path = CursorRing;
@@ -167,6 +170,7 @@
 				1C000000000000000000000A /* SettingsView.swift in Sources */,
 				1C000000000000000000000B /* SettingsWindowController.swift in Sources */,
 				1C000000000000000000000C /* NSColor+Hex.swift in Sources */,
+				1C000000000000000000000F /* Localization.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

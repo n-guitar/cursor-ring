@@ -8,12 +8,7 @@ enum CursorShape: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var label: String {
-        switch self {
-        case .ring:   return "リング"
-        case .square: return "四角"
-        }
-    }
+    // 表示名は言語に依存するため L10n.shapeName(_:) で扱う。
 
     /// 指定矩形に収まるパスを返す。`lineWidth` は将来のインセット計算用に受け取る。
     func path(in rect: CGRect, lineWidth: CGFloat) -> CGPath {

@@ -9,6 +9,11 @@ final class AppSettings: ObservableObject {
 
     private let defaults = UserDefaults.standard
 
+    /// デフォルトサイズ（「デフォルトに戻す」で使用）。
+    static let defaultWidth: Double = 96
+    static let defaultHeight: Double = 96
+    static let defaultLineWidth: Double = 6
+
     private enum Keys {
         static let shape = "shape"
         static let width = "width"
@@ -18,6 +23,7 @@ final class AppSettings: ObservableObject {
         static let shortcutKeyCode = "shortcutKeyCode"
         static let shortcutModifiers = "shortcutModifiers"
         static let shortcutKeyLabel = "shortcutKeyLabel"
+        static let language = "language"
     }
 
     @Published var shape: CursorShape {
@@ -43,8 +49,28 @@ final class AppSettings: ObservableObject {
         }
     }
 
+    /// UI 言語（デフォルト英語）。
+    @Published var language: AppLanguage {
+        didSet { defaults.set(language.rawValue, forKey: Keys.language) }
+    }
+
     /// 描画に使う NSColor。
     var nsColor: NSColor { NSColor(color) }
+
+    /// 現在の言語の文言。
+    var l10n: L10n { L10n(language) }
+
+    /// サイズ（横幅・縦幅・線の太さ）をデフォルトに戻す。
+    func resetSize() {
+        width = Self.defaultWidth
+        height = Self.defaultHeight
+        lineWidth = Self.defaultLineWidth
+    }
+
+    /// 形をリング⇄四角でトグルする。
+    func toggleShape() {
+        shape = (shape == .ring) ? .square : .ring
+    }
 
     private init() {
         let d = UserDefaults.standard
@@ -52,9 +78,12 @@ final class AppSettings: ObservableObject {
         let shapeRaw = d.string(forKey: Keys.shape) ?? CursorShape.ring.rawValue
         shape = CursorShape(rawValue: shapeRaw) ?? .ring
 
-        width = (d.object(forKey: Keys.width) as? Double) ?? 96
-        height = (d.object(forKey: Keys.height) as? Double) ?? 96
-        lineWidth = (d.object(forKey: Keys.lineWidth) as? Double) ?? 6
+        width = (d.object(forKey: Keys.width) as? Double) ?? Self.defaultWidth
+        height = (d.object(forKey: Keys.height) as? Double) ?? Self.defaultHeight
+        lineWidth = (d.object(forKey: Keys.lineWidth) as? Double) ?? Self.defaultLineWidth
+
+        // 言語は未設定ならデフォルト英語。
+        language = (d.string(forKey: Keys.language)).flatMap(AppLanguage.init(rawValue:)) ?? .english
 
         let hex = d.string(forKey: Keys.colorHex) ?? "#FF3B30FF"
         color = Color(nsColor: NSColor(hex: hex) ?? .systemRed)
