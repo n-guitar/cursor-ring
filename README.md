@@ -2,116 +2,116 @@
 
 [![Build](https://github.com/n-guitar/cursor-ring/actions/workflows/build.yml/badge.svg)](https://github.com/n-guitar/cursor-ring/actions/workflows/build.yml)
 
-**マウスカーソルの位置に“リング”を出して、今どこを指しているか一目で分かるようにする macOS アプリ。**
-キーを押すだけでカーソルの周りに目印が出るので、画面共有・プレゼン・録画・大きな画面での作業で「マウスどこ？」を解決します。メニューバーに常駐し、Dock には出ません。
+<p align="center">
+  <img src="design/icon.png" width="160" alt="cursor-ring icon">
+</p>
 
-## できること
+**Show your audience exactly where to look.**
+cursor-ring draws a ring around your mouse pointer with a single keypress, so you can call out the
+spot you're talking about — during screen shares, demos, presentations, live coding, and recordings.
+It lives in the menu bar and stays out of the Dock.
 
-- 🔵 **カーソルに追従するリング**を、キー一つで表示
-- ⏱ **2通りの出し方**
-  - **タップ**（ポンと押す）→ 出したまま固定。もう一度タップで消す
-  - **長押し**（押しっぱなし）→ 押している間だけ表示、離すと消える
-- 🖱 **大きさをその場で調整** — キーを押しながら2本指スクロール（上下＝縦、左右＝横）。リングを楕円にも長方形にもできる
-- 🎨 **見た目を自由に** — 形（リング／四角）・色・横幅・縦幅・線の太さを設定画面で変更
-- ⌨️ **ショートカットは変更可能** — 好きなキー（F1 などの単独キーもOK）に割り当て
-- 🪟 マルチディスプレイ対応 / 下のアプリ操作を邪魔しない（クリックは透過）
-- 🔒 **特別な権限は不要**（アクセシビリティ権限などの許可なしで動く）
+> 🇯🇵 日本語の説明は [**README.ja.md**](README.ja.md) にあります。
 
-> 対象: macOS 13 (Ventura) 以降
+Free and open source under the [MIT License](LICENSE) — use it however you like.
 
-## インストール（Xcode 不要）
+## Features
 
-1. [**Releases**](https://github.com/n-guitar/cursor-ring/releases/latest) を開き、最新版の `CursorRing.zip` をダウンロードして展開
-2. `CursorRing.app` を「アプリケーション」フォルダなどに移動
-3. **初回だけ Gatekeeper に止められる**ので、どちらかで回避:
-   - `CursorRing.app` を右クリック →「開く」→ ダイアログで「開く」
-   - またはターミナルで `xattr -dr com.apple.quarantine /アプリのパス/CursorRing.app`
+- 🔵 **A ring that follows your cursor**, shown with one key — point at what matters
+- ⏱ **Two ways to show it**
+  - **Tap** → stays on; tap again to hide
+  - **Hold** → visible only while the key is held
+- 🖱 **Resize on the fly** — hold the key and two-finger scroll (up/down = height, left/right = width). Turn the ring into an ellipse, or the square into a rectangle
+- 🎨 **Make it yours** — shape (ring / square), color, width, height, line thickness
+- ⌨️ **Re-bindable shortcut** — any key combo, or a single key like F1
+- 🪟 Multi-display aware / never blocks clicks to the app underneath
+- 🔒 **No special permissions required** (no Accessibility prompt)
 
-> 配布用に署名・公証（Notarization）はしていない個人利用向けビルドです。そのため初回だけ上の操作が要ります。
-> （最新コミットの試用ビルドが欲しい場合は Actions タブの各 Build 実行の Artifacts からも取得できます）
+> Requires macOS 13 (Ventura) or later.
 
-## 使い方
+## Install (no Xcode needed)
 
-起動するとメニューバーにアイコンが出ます（Dock には出ません）。
+1. Open [**Releases**](https://github.com/n-guitar/cursor-ring/releases/latest), download the latest `CursorRing.zip`, and unzip it
+2. Move `CursorRing.app` to your Applications folder
+3. The first launch is blocked by Gatekeeper (the build is unsigned). Work around it with either:
+   - Right-click `CursorRing.app` → **Open** → **Open** in the dialog
+   - or run `xattr -dr com.apple.quarantine /path/to/CursorRing.app` in Terminal
 
-1. **既定のショートカット ⌃⌥R**（設定で変更可）を押す
-   - タップ → リングが出たまま。もう一度タップで消える
-   - 長押し → 押している間だけ表示
-2. **キーを押しながら2本指スクロール**でリングの大きさを調整（上下＝縦、左右＝横）
-   - この操作中だけはスクロールが下のアプリ（ブラウザ等）に流れません
-3. メニューバーアイコン →「設定…」で形・色・サイズ・ショートカットを変更
-4. メニューの「サークルを表示（テスト）」で固定表示して見た目を確認できます
+> This is an unsigned, non-notarized build for personal use, so the one-time step above is needed.
+
+## Usage
+
+After launching, an icon appears in the menu bar (nothing in the Dock).
+
+1. Press the shortcut (**⌃⌥R** by default; change it in Settings)
+   - **Tap** → the ring stays on. Tap again to hide it
+   - **Hold** → the ring shows only while held
+2. **Hold the key and two-finger scroll** to resize the ring (up/down = height, left/right = width).
+   Scrolling only affects the ring during this — it won't scroll the app underneath
+3. Menu bar icon → **Settings** to change shape, color, size, and the shortcut
 
 ---
 
-## 開発者向け
+## For developers
 
 <details>
-<summary>仕組み・ビルド・構成（クリックで展開）</summary>
+<summary>How it works / build / structure (click to expand)</summary>
 
-### 技術概要
+### Overview
 
-- Swift + SwiftUI（`MenuBarExtra` / 設定画面）+ AppKit（オーバーレイ描画・イベント監視）
-- メニューバー常駐は `MenuBarExtra` + `LSUIElement=YES`（Dock 非表示）
-- オーバーレイは透明・クリック透過・最前面の `NSWindow`
+- Swift + SwiftUI (`MenuBarExtra`, settings window) + AppKit (overlay drawing, event monitoring)
+- Menu-bar resident via `MenuBarExtra` + `LSUIElement=YES` (hidden from Dock)
+- Overlay is a transparent, click-through, top-most `NSWindow`
   - `.borderless` / `backgroundColor = .clear` / `isOpaque = false` / `ignoresMouseEvents = true` / `level = .screenSaver`
-  - 全ディスプレイを覆う矩形でマルチディスプレイ追従
-- 描画は `CAShapeLayer`（`CursorShapeView`）。形は `enum CursorShape { ring, square }`（縦横別指定で楕円・長方形）
-- ショートカット検知は **Carbon `RegisterEventHotKey`**（`ShortcutMonitor`）→ **アクセシビリティ権限不要**
-  - 「離した」検知は Carbon の released イベントではなく `CGEventSource.keyState` をポーリング
-    （修飾キーを先に離すと released が届かない場合があるため）
-- 伸縮はキー押下中だけ `ignoresMouseEvents` を解除し、オーバーレイ自身が `scrollWheel` を消費（下のアプリに漏れない）
-- マウス追従（`MouseTracker`）は `NSEvent` グローバル監視（マウス系は権限不要）
-- 設定は `UserDefaults` に永続化（`AppSettings`）
+  - **One overlay window per display** (`NSScreen`), so it renders correctly across mixed resolutions/scales; rebuilt on display changes
+- Drawing via `CAShapeLayer` (`CursorShapeView`). Shape is `enum CursorShape { ring, square }` (independent width/height → ellipse/rectangle)
+- Shortcut detection uses **Carbon `RegisterEventHotKey`** (`ShortcutMonitor`) → **no Accessibility permission**
+  - "released" is detected by polling `CGEventSource.keyState` (Carbon's released event can be missed if a modifier is released first)
+- Resize: while the key is held, click-through is disabled so the overlay itself consumes `scrollWheel` (doesn't leak to the app below)
+- Mouse following (`MouseTracker`) uses an `NSEvent` global monitor (mouse events need no permission)
+- Settings persist in `UserDefaults` (`AppSettings`)
 
-> 当初はショートカット検知に `NSEvent` のグローバルキー監視（要・アクセシビリティ権限）を使っていたが、
-> 未署名アプリだと TCC の署名不一致で権限が効かない問題があり、権限不要な Carbon 方式へ切り替えた。
-> 設定 UI のショートカット記録も外部ライブラリ（`KeyboardShortcuts`）を使わず `NSEvent` で自前実装している
-> （`.xcodeproj` を手書き管理しているため、未検証の SPM 依存を入れない方針）。
-
-### ビルド・実行
+### Build
 
 ```sh
 open CursorRing.xcodeproj
 ```
 
-Xcode で Run（⌘R）。ローカル実行のみなら署名は「Sign to Run Locally」で動く。
+Run with ⌘R (signing can be "Sign to Run Locally" for local use).
 
-push のたびに `.github/workflows/build.yml` が macOS ランナー（Xcode 15.4、`arm64`＋`x86_64`、
-deployment target macOS 13.0）で `xcodebuild` し、試用用に `.app` を Artifacts として添付する。
+CI builds on every push (`.github/workflows/build.yml`, macOS / Xcode 15.4, universal). Tagged
+releases (`.github/workflows/release.yml`, on `v*` tag push or manual run) attach `CursorRing.zip`
+to a GitHub Release.
 
-配布用は `.github/workflows/release.yml`：`v*` タグの push（または Actions の手動実行）で
-Release ビルドを作り、`CursorRing.zip` を GitHub Release に添付する。タグを打つ例:
+### Icon
 
-```sh
-git tag v0.1.0 && git push origin v0.1.0
-```
+`design/icon.svg` is the source. The PNGs in `CursorRing/Assets.xcassets/AppIcon.appiconset` are
+generated from it — edit the SVG and regenerate the sizes to change the icon.
 
-### ファイル構成
+### Structure
 
 ```
 CursorRing/
-  CursorRingApp.swift            @main / MenuBarExtra（メニュー）
-  AppDelegate.swift              ショートカット監視と表示の配線（タップ/長押し/伸縮の状態管理）
-  OverlayController.swift        オーバーレイ生成・表示・マウス追従・スクロール捕捉切替・設定反映
-  OverlayWindow.swift            透明・クリック透過・最前面の NSWindow
-  CursorShapeView.swift          CAShapeLayer でサークルを描く NSView（スクロール消費もここ）
-  CursorShape.swift              形の enum（パス差し替え）
-  MouseTracker.swift             NSEvent によるマウス追従
-  ShortcutMonitor.swift          Carbon RegisterEventHotKey によるホットキー検知（権限不要）
-  AppSettings.swift              設定の保持・永続化（UserDefaults）
-  SettingsView.swift             設定画面（SwiftUI）
-  SettingsWindowController.swift 設定ウィンドウ管理（AppKit）
-  NSColor+Hex.swift              色の保存用 hex 変換
+  CursorRingApp.swift            @main / MenuBarExtra (menu)
+  AppDelegate.swift              wires shortcut → show/hide (tap/hold/resize state machine)
+  OverlayController.swift        per-display overlays, cursor following, scroll capture, settings
+  OverlayWindow.swift            transparent click-through top-most NSWindow
+  CursorShapeView.swift          draws the ring with CAShapeLayer (and consumes scroll)
+  CursorShape.swift              shape enum (swap the path)
+  MouseTracker.swift             cursor following via NSEvent
+  ShortcutMonitor.swift          Carbon RegisterEventHotKey (no permission)
+  AppSettings.swift              settings storage / persistence (UserDefaults)
+  SettingsView.swift             settings screen (SwiftUI)
+  SettingsWindowController.swift settings window management (AppKit)
+  NSColor+Hex.swift              color hex conversion for persistence
 ```
 
-### 今後（未着手）
+### Not done yet
 
-- 配布する場合の署名・Notarization（Apple Developer 登録が必要）
-
-### アイコン
-
-アプリアイコンは `design/icon.svg` がソース。`CursorRing/Assets.xcassets/AppIcon.appiconset` の
-各サイズ PNG は SVG から生成している（差し替える場合は SVG を編集して各サイズを再生成）。
+- Code signing / notarization for distribution (needs an Apple Developer account)
 
 </details>
+
+## License
+
+[MIT License](LICENSE) © n-guitar. Completely free — use, modify, and redistribute freely.
