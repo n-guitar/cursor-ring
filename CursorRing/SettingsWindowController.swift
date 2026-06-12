@@ -9,7 +9,7 @@ final class SettingsWindowController {
         if window == nil {
             let hosting = NSHostingController(rootView: SettingsView())
             let window = NSWindow(contentViewController: hosting)
-            window.title = "CursorRing 設定"
+            window.title = AppSettings.shared.l10n.settingsTitle
             window.styleMask = [.titled, .closable, .miniaturizable]
             window.isReleasedWhenClosed = false
             window.setContentSize(NSSize(width: 460, height: 560))

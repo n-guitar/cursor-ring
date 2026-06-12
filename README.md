@@ -22,7 +22,8 @@ Free and open source under the [MIT License](LICENSE) — use it however you lik
   - **Tap** → stays on; tap again to hide
   - **Hold** → visible only while the key is held
 - 🖱 **Resize on the fly** — hold the key and two-finger scroll (up/down = height, left/right = width). Turn the ring into an ellipse, or the square into a rectangle
-- 🎨 **Make it yours** — shape (ring / square), color, width, height, line thickness
+- 🎨 **Make it yours** — shape (ring / square), color, width, height, line thickness, plus a one-tap reset to default size
+- 🌐 **English or 日本語** — UI language is switchable in Settings (defaults to English)
 - ⌨️ **Re-bindable shortcut** — any key combo, or a single key like F1
 - 🪟 Multi-display aware / never blocks clicks to the app underneath
 - 🔒 **No special permissions required** (no Accessibility prompt)

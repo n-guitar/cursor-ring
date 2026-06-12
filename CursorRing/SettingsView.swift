@@ -8,39 +8,55 @@ struct SettingsView: View {
     @State private var recorderMonitor: Any?
 
     var body: some View {
+        let l = settings.l10n
         Form {
-            Section("見た目") {
-                Picker("形", selection: $settings.shape) {
+            Section(l.sectionAppearance) {
+                Picker(l.shape, selection: $settings.shape) {
                     ForEach(CursorShape.allCases) { shape in
-                        Text(shape.label).tag(shape)
+                        Text(l.shapeName(shape)).tag(shape)
                     }
                 }
 
-                ColorPicker("色", selection: $settings.color, supportsOpacity: true)
+                ColorPicker(l.color, selection: $settings.color, supportsOpacity: true)
 
-                sliderRow(title: "横幅", value: $settings.width, range: 20...600)
-                sliderRow(title: "縦幅", value: $settings.height, range: 20...600)
-                sliderRow(title: "線の太さ", value: $settings.lineWidth, range: 1...40)
+                sliderRow(title: l.width, value: $settings.width, range: 20...600)
+                sliderRow(title: l.height, value: $settings.height, range: 20...600)
+                sliderRow(title: l.lineWidth, value: $settings.lineWidth, range: 1...40)
+
+                HStack {
+                    Spacer()
+                    Button(l.resetSize) { settings.resetSize() }
+                }
             }
 
-            Section("ショートカット（押している間だけ表示）") {
+            Section(l.sectionShortcut) {
                 HStack {
-                    Text("現在: \(settings.shortcut.displayString)").font(.body.monospaced())
+                    Text("\(l.current) \(settings.shortcut.displayString)").font(.body.monospaced())
                     Spacer()
-                    Button(recording ? "修飾キー + キーを押す…" : "変更") {
+                    Button(recording ? l.pressKeys : l.change) {
                         recording ? stopRecording() : startRecording()
                     }
                 }
-                Text("⌃ ⌥ ⇧ ⌘ との組み合わせ、または F1〜F20 単独で記録できます。特別な権限は不要です。")
+                Text(l.shortcutHintCombo)
                     .font(.caption).foregroundColor(.secondary)
-                Text("タップ＝出したまま（もう一度タップで消す）／長押し＝離すまで表示。キーを押しながら2本指スクロールで伸縮（その間ブラウザ等には影響しません）。")
+                Text(l.shortcutHintBehavior)
                     .font(.caption).foregroundColor(.secondary)
-                Text("Fキー単独を使う場合、システム設定 >  キーボードで「F1, F2 等を標準のファンクションキーとして使用」を ON にするか Fn 併用が必要です。")
+                Text(l.shortcutHintFnKey)
                     .font(.caption).foregroundColor(.secondary)
+            }
+
+            Section(l.sectionLanguage) {
+                Picker(l.sectionLanguage, selection: $settings.language) {
+                    ForEach(AppLanguage.allCases) { lang in
+                        Text(lang.label).tag(lang)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
             }
         }
         .formStyle(.grouped)
-        .frame(width: 460, height: 560)
+        .frame(width: 460, height: 600)
         .onDisappear { stopRecording() }
     }
 
